@@ -25,6 +25,7 @@ endfunction
 
 function! rhubarb#HomepageForUrl(url) abort
   let dict_or_list = get(g:, 'github_enterprise_urls', get(g:, 'fugitive_github_domains', {}))
+  let alias_hostnames = get(g:, 'github_alias_hostnames', {} )
   if type(dict_or_list) ==# type({})
     let domains = dict_or_list
   elseif type(dict_or_list) == type([])
@@ -54,7 +55,15 @@ function! rhubarb#HomepageForUrl(url) abort
     let key = match[2]
   elseif has_key(domains, match[3])
     let key = match[3]
+  elseif has_key(alias_hostnames, match[2])
+    let domain =  get(alias_hostnames, match[2], '')
+    if domain ==# ''
+        return ''
+    else
+        return domain .'/'. match[4]
+    endif
   else
+    echo [match, domains]
     return ''
   endif
   let root = domains[key]
